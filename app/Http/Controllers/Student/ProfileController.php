@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Borrowing;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -30,16 +31,23 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
+        $cloudinary = new Cloudinary(
+            "cloudinary://" . env('CLOUDINARY_API_KEY') . ":" . env('CLOUDINARY_API_SECRET') . "@" . env('CLOUDINARY_CLOUD_NAME')
+        );
+
+        // Delete old photo from Cloudinary if present
         if ($user->profile_photo && str_contains($user->profile_photo, 'cloudinary')) {
             $publicId = pathinfo(basename(parse_url($user->profile_photo, PHP_URL_PATH)), PATHINFO_FILENAME);
-            cloudinary()->destroy('profile-photos/' . $publicId);
+            $cloudinary->uploadApi()->destroy('profile-photos/' . $publicId);
         }
 
-        $result = cloudinary()->upload($request->file('photo')->getRealPath(), [
-            'folder' => 'profile-photos',
-        ]);
+        // Upload new photo
+        $result = $cloudinary->uploadApi()->upload(
+            $request->file('photo')->getRealPath(),
+            ['folder' => 'profile-photos']
+        );
 
-        $user->update(['profile_photo' => $result->getSecurePath()]);
+        $user->update(['profile_photo' => $result['secure_url']]);
 
         $rp = $user->isFaculty() ? 'faculty' : 'student';
 
