@@ -126,4 +126,4 @@ EXPOSE 10000
 
 
 
-CMD php artisan migrate --force && php artisan config:clear && apache2-foreground
+CMD php artisan config:clear && php artisan cache:clear && php artisan config:cache && php artisan migrate --force && apache2-foreground
