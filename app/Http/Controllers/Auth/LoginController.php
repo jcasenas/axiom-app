@@ -40,15 +40,12 @@ class LoginController extends Controller
                 ])->onlyInput('email');
             }
         } catch (\Throwable $e) {
-            // Fallback if RateLimiter fails (e.g., cache issues on XAMPP)
             \Log::warning('RateLimiter failed: ' . $e->getMessage());
-            // Continue without blocking login during development
         }
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            // Only hit rate limiter on failed login attempt
             try {
-                RateLimiter::hit($throttleKey, 60); // Lock for 60 seconds
+                RateLimiter::hit($throttleKey, 60);
             } catch (\Throwable $e) {
                 \Log::warning('RateLimiter::hit failed: ' . $e->getMessage());
             }
@@ -80,8 +77,9 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        // Scheduler fallback for overdue borrowings (XAMPP friendly)
+        // Scheduler fallbacks (runs on every login since Render free tier sleeps)
         $this->markOverdueBorrowings();
+        $this->markDueSoonBorrowings();
 
         return $this->redirectAfterLogin($user);
     }
@@ -150,8 +148,48 @@ class LoginController extends Controller
                 ));
             }
         } catch (\Throwable $e) {
-            // Log silently - never block login due to overdue processing
             \Log::error('markOverdueBorrowings failed on login: ' . $e->getMessage());
+        }
+    }
+
+    // ── Due Soon check (mirrors axiom:due-reminders command) ───────
+    private function markDueSoonBorrowings(): void
+    {
+        try {
+            $today   = Carbon::today();
+            $in1Day  = $today->copy()->addDay()->toDateString();
+            $in2Days = $today->copy()->addDays(2)->toDateString();
+
+            $borrows = Borrowing::with(['user', 'ebook'])
+                ->where('status', 'active')
+                ->whereRaw('DATE(access_expires_at) IN (?, ?)', [$in1Day, $in2Days])
+                ->get();
+
+            if ($borrows->isEmpty()) {
+                return;
+            }
+
+            foreach ($borrows as $borrow) {
+                // Mark as due_soon
+                $borrow->update(['status' => 'due_soon']);
+
+                if (! $borrow->user || ! $borrow->ebook) {
+                    continue;
+                }
+
+                $daysLeft = $today->diffInDays(Carbon::parse($borrow->access_expires_at));
+                $label    = $daysLeft <= 1 ? 'tomorrow' : 'in 2 days';
+                $rp       = $borrow->user->isFaculty() ? 'faculty' : 'student';
+
+                $borrow->user->notify(new AxiomNotification(
+                    message: "Reminder: Your access to \"{$borrow->ebook->title}\" expires {$label} on " .
+                             Carbon::parse($borrow->access_expires_at)->format('M d, Y') . ".",
+                    type:    'warning',
+                    link:    route("{$rp}.my-books.index")
+                ));
+            }
+        } catch (\Throwable $e) {
+            \Log::error('markDueSoonBorrowings failed on login: ' . $e->getMessage());
         }
     }
 }
