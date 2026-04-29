@@ -12,7 +12,6 @@
     align-items:start;
 }
 
-/* Avatar column */
 .avatar-col { display:flex; flex-direction:column; align-items:center; gap:10px; }
 
 .avatar-circle {
@@ -37,7 +36,6 @@
 }
 .btn-photo:hover, .btn-password:hover { background:#3b4f7a; }
 
-/* Info column */
 .info-section { margin-bottom:28px; }
 .info-section h3 { font-size:1.05rem; font-weight:700; color:#1a1a2e; margin-bottom:14px; }
 
@@ -51,7 +49,6 @@
 .summary-table td:first-child { color:#5a5a7a; }
 .summary-num { font-size:1.1rem; }
 
-/* Password modal */
 .modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,10,20,.5); z-index:300; align-items:center; justify-content:center; }
 .modal-overlay.open { display:flex; }
 .modal-box { background:white; border-radius:12px; padding:28px; max-width:400px; width:90%; box-shadow:0 20px 50px rgba(0,0,0,.25); animation:popIn .2s ease; }
@@ -85,7 +82,7 @@
         <div class="avatar-col">
             <div class="avatar-circle">
                 @if(Auth::user()->profile_photo)
-                    <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="Profile Photo">
+                    <img src="{{ Auth::user()->profile_photo }}" alt="Profile Photo">
                 @else
                     <span class="avatar-initials">
                         {{ strtoupper(substr(Auth::user()->full_name, 0, 1)) }}
@@ -93,7 +90,6 @@
                 @endif
             </div>
 
-            {{-- Change Photo --}}
             <form method="POST" action="{{ route('admin.profile.photo') }}" enctype="multipart/form-data" style="width:100%;">
                 @csrf @method('PUT')
                 <input type="file" name="photo" id="photoInput" accept="image/*"
@@ -109,7 +105,6 @@
 
         {{-- Info column --}}
         <div>
-            {{-- Personal Information --}}
             <div class="info-section">
                 <h3>Personal Information</h3>
                 <table class="info-table">
@@ -120,7 +115,6 @@
                 </table>
             </div>
 
-            {{-- Summary --}}
             <div class="info-section">
                 <h3>Summary</h3>
                 <table class="info-table summary-table">
@@ -149,7 +143,6 @@
     </div>
 </div>
 
-{{-- Change Password Modal --}}
 <div class="modal-overlay" id="passwordModal">
   <div class="modal-box">
     <div class="modal-title">Change Password</div>

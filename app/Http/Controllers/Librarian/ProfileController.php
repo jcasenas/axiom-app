@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Librarian;
 
-use App\Notifications\AxiomNotification;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -31,15 +29,19 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        if ($user->profile_photo) {
-            Storage::disk('public')->delete($user->profile_photo);
+        if ($user->profile_photo && str_contains($user->profile_photo, 'cloudinary')) {
+            $publicId = pathinfo(basename(parse_url($user->profile_photo, PHP_URL_PATH)), PATHINFO_FILENAME);
+            cloudinary()->destroy('profile-photos/' . $publicId);
         }
 
-        $path = $request->file('photo')->store('profile-photos', 'public');
-        $user->update(['profile_photo' => $path]);
+        $result = cloudinary()->upload($request->file('photo')->getRealPath(), [
+            'folder' => 'profile-photos',
+        ]);
+
+        $user->update(['profile_photo' => $result->getSecurePath()]);
 
         return redirect()->route('librarian.profile')
-        ->with('toast', ['message' => 'Profile photo updated.', 'type' => 'success']);
+            ->with('toast', ['message' => 'Profile photo updated.', 'type' => 'success']);
     }
 
     public function updatePassword(Request $request)
@@ -58,6 +60,6 @@ class ProfileController extends Controller
         $user->update(['password' => Hash::make($request->password)]);
 
         return redirect()->route('librarian.profile')
-        ->with('toast', ['message' => 'Password changed successfully.', 'type' => 'success']);
+            ->with('toast', ['message' => 'Password changed successfully.', 'type' => 'success']);
     }
 }

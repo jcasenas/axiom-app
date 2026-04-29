@@ -408,9 +408,9 @@
 
         <div class="nav-user" tabindex="0">
             @if(Auth::user()->profile_photo)
-                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
-                     style="width:32px;height:32px;border-radius:50%;object-fit:cover;"
-                     alt="Avatar">
+                <img src="{{ Auth::user()->profile_photo }}"
+                    style="width:32px;height:32px;border-radius:50%;object-fit:cover;"
+                    alt="Avatar">
             @else
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor" stroke-width="1.5">

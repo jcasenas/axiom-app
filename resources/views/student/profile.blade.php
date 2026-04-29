@@ -4,7 +4,6 @@
 
 @push('styles')
 <style>
-/* Modal overlay for password change */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,10,20,.5); z-index: 300; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-box { background: white; border-radius: 12px; padding: 28px; max-width: 400px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,.25); animation: popIn .2s ease; }
@@ -36,7 +35,7 @@
         <div class="avatar-col">
             <div class="avatar-circle">
                 @if(Auth::user()->profile_photo)
-                    <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="Profile Photo">
+                    <img src="{{ Auth::user()->profile_photo }}" alt="Profile Photo">
                 @else
                     <span class="avatar-initials">{{ strtoupper(substr(Auth::user()->full_name, 0, 1)) }}</span>
                 @endif
@@ -93,7 +92,6 @@
     </div>
 </div>
 
-{{-- Change Password Modal --}}
 <div class="modal-overlay" id="passwordModal">
   <div class="modal-box">
     <div class="modal-title">Change Password</div>
