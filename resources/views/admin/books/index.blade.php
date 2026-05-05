@@ -15,7 +15,7 @@
 /* Modal */
 .modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,10,20,.5); z-index:300; align-items:center; justify-content:center; }
 .modal-overlay.open { display:flex; }
-.modal-box { background:white; border-radius:12px; padding:28px 28px 24px; max-width:520px; width:90%; box-shadow:0 20px 50px rgba(0,0,0,.25); animation:popIn .2s ease; }
+.modal-box { background:white; border-radius:12px; padding:28px 28px 24px; max-width:560px; width:90%; box-shadow:0 20px 50px rgba(0,0,0,.25); animation:popIn .2s ease; max-height:90vh; overflow-y:auto; }
 .modal-box.sm { max-width:380px; }
 @keyframes popIn { from{transform:scale(.92);opacity:0} to{transform:scale(1);opacity:1} }
 .modal-title { font-size:1rem; font-weight:700; color:#1a1a2e; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid #f0eef8; }
@@ -39,6 +39,47 @@
 .field textarea { resize:vertical; min-height:72px; }
 .field select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238884a8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; cursor:pointer; }
 .field-ro input { background:#e8e6f0; color:#8884a8; cursor:not-allowed; }
+
+/* Cover preview panel */
+.cover-preview-row {
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:14px;
+    align-items:start;
+    margin-bottom:12px;
+}
+.cover-preview-box {
+    width:110px;
+    aspect-ratio:2/3;
+    border-radius:8px;
+    background:#f0eef8;
+    border:1.5px dashed #c8c5e8;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    transition:border-color .2s;
+}
+.cover-preview-box img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+}
+.cover-preview-box .cover-placeholder {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:8px;
+    text-align:center;
+}
+.cover-preview-box .cover-placeholder svg { color:#c8c5e8; width:28px; height:28px; }
+.cover-preview-box .cover-placeholder span { font-size:.65rem; color:#b0acd0; line-height:1.3; }
+.cover-preview-box.has-image { border-style:solid; border-color:#a8a4e0; }
 
 /* View details table */
 .detail-table { width:100%; font-size:.85rem; border-collapse:collapse; margin:14px 0; }
@@ -129,7 +170,8 @@
                         '{{ $book->total_copies }}',
                         '{{ $book->available_copies }}',
                         '{{ $book->status }}',
-                        '{{ addslashes($book->description ?? '—') }}'
+                        '{{ addslashes($book->description ?? '—') }}',
+                        '{{ addslashes($book->cover_url ?? '') }}'
                     )">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </button>
@@ -216,11 +258,29 @@
         </div>
         <div class="field"><label>Total Copies</label><input type="number" name="total_copies" min="1" value="1" required></div>
       </div>
-      <div class="field">
-          <label>Cover Image URL</label>
-          <input type="url" name="cover_url" placeholder="https://example.com/cover.jpg" style="width:100%;">
-          <small style="color:#8884a8;font-size:0.78rem;">Optional: Direct image link (JPG, PNG, WebP).</small>
+
+      {{-- Cover URL + Live Preview --}}
+      <div class="cover-preview-row">
+        <div class="cover-preview-box" id="addCoverBox">
+            <img id="addCoverImg" src="" alt="Cover Preview">
+            <div class="cover-placeholder" id="addCoverPlaceholder">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span>Cover preview</span>
+            </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+            <label>Cover Image URL</label>
+            <input type="url" name="cover_url" id="addCoverUrl"
+                   placeholder="https://example.com/cover.jpg"
+                   oninput="previewCover('addCoverUrl','addCoverImg','addCoverBox','addCoverPlaceholder')">
+            <small style="color:#8884a8;font-size:0.78rem;margin-top:4px;">
+                Paste a direct image URL to preview. Students will see this thumbnail in the catalog.
+            </small>
+        </div>
       </div>
+
       <div class="field"><label>File URL</label><input type="text" name="file_url" placeholder="https://drive.google.com/..."></div>
       <div class="field"><label>Description</label><textarea name="description" placeholder="Optional book description"></textarea></div>
       <div class="modal-actions">
@@ -259,11 +319,29 @@
         <div class="field"><label>Total Copies</label><input type="number" name="total_copies" id="eTotalCopies" min="1"></div>
         <div class="field"><label>Available Copies</label><input type="number" name="available_copies" id="eAvailCopies" min="0"></div>
       </div>
-      <div class="field">
-          <label>Cover Image URL</label>
-          <input type="url" name="cover_url" id="eCoverUrl" placeholder="https://example.com/cover.jpg" style="width:100%;">
-          <small style="color:#8884a8;font-size:0.78rem;">Optional: Direct image link (JPG, PNG, WebP).</small>
+
+      {{-- Cover URL + Live Preview --}}
+      <div class="cover-preview-row">
+        <div class="cover-preview-box" id="editCoverBox">
+            <img id="editCoverImg" src="" alt="Cover Preview">
+            <div class="cover-placeholder" id="editCoverPlaceholder">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span>Cover preview</span>
+            </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+            <label>Cover Image URL</label>
+            <input type="url" name="cover_url" id="eCoverUrl"
+                   placeholder="https://example.com/cover.jpg"
+                   oninput="previewCover('eCoverUrl','editCoverImg','editCoverBox','editCoverPlaceholder')">
+            <small style="color:#8884a8;font-size:0.78rem;margin-top:4px;">
+                Paste a direct image URL to preview. Students will see this thumbnail in the catalog.
+            </small>
+        </div>
       </div>
+
       <div class="field"><label>File URL</label><input type="text" name="file_url" id="eFileUrl" placeholder="https://..."></div>
       <div class="field"><label>Description</label><textarea name="description" id="eDesc"></textarea></div>
       <div class="modal-actions">
@@ -278,17 +356,30 @@
 <div class="modal-overlay" id="viewBookModal">
   <div class="modal-box">
     <div class="modal-title">Book Details</div>
-    <table class="detail-table">
-      <tr><td>Title</td>       <td id="vbTitle"></td></tr>
-      <tr><td>Author</td>      <td id="vbAuthor"></td></tr>
-      <tr><td>Category</td>    <td id="vbCat"></td></tr>
-      <tr><td>Format</td>      <td id="vbFormat"></td></tr>
-      <tr><td>ISBN</td>        <td id="vbIsbn"></td></tr>
-      <tr><td>Total Copies</td><td id="vbTotal"></td></tr>
-      <tr><td>Available</td>   <td id="vbAvail"></td></tr>
-      <tr><td>Status</td>      <td id="vbStatus"></td></tr>
-      <tr><td>Description</td> <td id="vbDesc" style="white-space:pre-wrap;"></td></tr>
-    </table>
+    {{-- Cover + details side by side --}}
+    <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:8px;">
+        <div style="flex-shrink:0;">
+            <img id="vbCoverImg" src="" alt="Cover"
+                 style="width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:8px;background:#f0eef8;display:none;">
+            <div id="vbCoverPlaceholder"
+                 style="width:90px;aspect-ratio:2/3;border-radius:8px;background:linear-gradient(135deg,#ede9fe,#c4b5fd);display:flex;align-items:center;justify-content:center;">
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="1.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+        </div>
+        <table class="detail-table" style="flex:1;">
+          <tr><td>Title</td>       <td id="vbTitle"></td></tr>
+          <tr><td>Author</td>      <td id="vbAuthor"></td></tr>
+          <tr><td>Category</td>    <td id="vbCat"></td></tr>
+          <tr><td>Format</td>      <td id="vbFormat"></td></tr>
+          <tr><td>ISBN</td>        <td id="vbIsbn"></td></tr>
+          <tr><td>Total Copies</td><td id="vbTotal"></td></tr>
+          <tr><td>Available</td>   <td id="vbAvail"></td></tr>
+          <tr><td>Status</td>      <td id="vbStatus"></td></tr>
+          <tr><td>Description</td> <td id="vbDesc" style="white-space:pre-wrap;"></td></tr>
+        </table>
+    </div>
     <div class="modal-actions"><button class="btn-cancel-modal" onclick="closeModal('viewBookModal')">Close</button></div>
   </div>
 </div>
@@ -315,8 +406,46 @@
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
-function openAddModal(){ document.getElementById('addModal').classList.add('open'); }
+// ── Cover preview helper ────────────────────────────────────────────
+function previewCover(inputId, imgId, boxId, placeholderId) {
+    var url = document.getElementById(inputId).value.trim();
+    var img = document.getElementById(imgId);
+    var box = document.getElementById(boxId);
+    var ph  = document.getElementById(placeholderId);
 
+    if (!url) {
+        img.style.display = 'none';
+        img.src = '';
+        ph.style.display = 'flex';
+        box.classList.remove('has-image');
+        return;
+    }
+
+    img.onload = function() {
+        img.style.display = 'block';
+        ph.style.display  = 'none';
+        box.classList.add('has-image');
+    };
+    img.onerror = function() {
+        img.style.display = 'none';
+        ph.style.display  = 'flex';
+        box.classList.remove('has-image');
+    };
+    img.src = url;
+}
+
+// ── Reset add modal cover on open ──────────────────────────────────
+function openAddModal(){
+    document.getElementById('addModal').classList.add('open');
+    // Reset preview
+    document.getElementById('addCoverUrl').value   = '';
+    document.getElementById('addCoverImg').src      = '';
+    document.getElementById('addCoverImg').style.display = 'none';
+    document.getElementById('addCoverPlaceholder').style.display = 'flex';
+    document.getElementById('addCoverBox').classList.remove('has-image');
+}
+
+// ── Edit modal ─────────────────────────────────────────────────────
 function openEditModal(id, title, authorId, catId, fmtId, isbn, total, avail, status, fileUrl, coverUrl, desc) {
     document.getElementById('editForm').action    = `/admin/books/${id}`;
     document.getElementById('eTitle').value       = title;
@@ -324,14 +453,20 @@ function openEditModal(id, title, authorId, catId, fmtId, isbn, total, avail, st
     document.getElementById('eTotalCopies').value = total;
     document.getElementById('eAvailCopies').value = avail;
     document.getElementById('eFileUrl').value     = fileUrl  || '';
-    document.getElementById('eCoverUrl').value    = coverUrl || '';
     document.getElementById('eDesc').value        = desc     || '';
     document.getElementById('eCat').value         = catId;
     document.getElementById('eStatus').value      = status;
+
+    // Set cover URL and trigger preview
+    var coverInput = document.getElementById('eCoverUrl');
+    coverInput.value = coverUrl || '';
+    previewCover('eCoverUrl', 'editCoverImg', 'editCoverBox', 'editCoverPlaceholder');
+
     document.getElementById('editModal').classList.add('open');
 }
 
-function openViewBook(title, author, cat, fmt, isbn, total, avail, status, desc) {
+// ── View modal ─────────────────────────────────────────────────────
+function openViewBook(title, author, cat, fmt, isbn, total, avail, status, desc, coverUrl) {
     document.getElementById('vbTitle').textContent  = title;
     document.getElementById('vbAuthor').textContent = author;
     document.getElementById('vbCat').textContent    = cat;
@@ -341,15 +476,29 @@ function openViewBook(title, author, cat, fmt, isbn, total, avail, status, desc)
     document.getElementById('vbAvail').textContent  = avail;
     document.getElementById('vbStatus').textContent = status;
     document.getElementById('vbDesc').textContent   = desc;
+
+    var img = document.getElementById('vbCoverImg');
+    var ph  = document.getElementById('vbCoverPlaceholder');
+    if (coverUrl) {
+        img.src = coverUrl;
+        img.style.display = 'block';
+        ph.style.display  = 'none';
+    } else {
+        img.style.display = 'none';
+        ph.style.display  = 'flex';
+    }
+
     document.getElementById('viewBookModal').classList.add('open');
 }
 
+// ── Archive modal ──────────────────────────────────────────────────
 function openArchiveModal(id, title) {
     document.getElementById('archiveBody').innerHTML = `Archive <strong>${title}</strong>? It will be hidden from the catalog but retained in the database.`;
     document.getElementById('archiveForm').action = `/admin/books/${id}`;
     document.getElementById('archiveModal').classList.add('open');
 }
 
+// ── Edit button listeners ──────────────────────────────────────────
 document.querySelectorAll('.btn-edit').forEach(btn => {
     btn.addEventListener('click', function () {
         openEditModal(
