@@ -8,55 +8,69 @@
 .btn-pdf:hover { background:#2a3050; }
 .btn-pdf svg { width:15px; height:15px; }
 
-/* Modal */
-.modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,10,20,.5); z-index:300; align-items:center; justify-content:center; }
+/* ── Modal base ── */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,10,20,.55); z-index:300; align-items:center; justify-content:center; padding:16px; }
 .modal-overlay.open { display:flex; }
-.modal-box { background:white; border-radius:12px; padding:28px 32px 24px; max-width:500px; width:90%; box-shadow:0 20px 50px rgba(0,0,0,.25); animation:popIn .2s ease; max-height:90vh; overflow-y:auto; }
-@keyframes popIn { from{transform:scale(.92);opacity:0} to{transform:scale(1);opacity:1} }
-.modal-title { font-size:1.1rem; font-weight:700; color:#1a1a2e; text-align:center; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid #f0eef8; letter-spacing:.06em; text-transform:uppercase; }
+@keyframes popIn { from{transform:scale(.93);opacity:0} to{transform:scale(1);opacity:1} }
 
-/* View modal layout */
-.view-modal-body { display:flex; gap:16px; align-items:flex-start; }
-.view-cover-box {
-    flex-shrink:0;
-    width:90px;
-}
-.view-cover-box img {
-    width:90px; aspect-ratio:2/3; object-fit:cover;
-    border-radius:8px; background:#f0eef8; display:none;
-}
-.view-cover-placeholder {
-    width:90px; aspect-ratio:2/3; border-radius:8px;
-    background:linear-gradient(135deg,#ede9fe,#c4b5fd);
-    display:flex; align-items:center; justify-content:center;
+/* ── Wide two-column modal ── */
+.modal-box-wide {
+    background:white; border-radius:14px; width:100%; max-width:780px;
+    box-shadow:0 24px 60px rgba(0,0,0,.28); animation:popIn .2s ease;
+    display:flex; overflow:hidden; max-height:92vh;
 }
 
-.detail-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f5f4fc; font-size:.85rem; }
-.detail-row:last-of-type { border-bottom:none; }
-.detail-row .d-label { color:#8884a8; }
-.detail-row .d-value { font-weight:600; color:#1a1a2e; background:#f5f4fc; border-radius:20px; padding:3px 12px; font-size:.82rem; text-align:center; min-width:80px; }
-
-/* Edit modal cover preview */
-.cover-preview-row {
-    display:grid;
-    grid-template-columns:90px 1fr;
-    gap:12px;
-    align-items:start;
-    margin-bottom:12px;
+/* Left cover panel */
+.modal-cover-panel {
+    width:220px; flex-shrink:0;
+    background:linear-gradient(160deg,#1a1a2e 0%,#2a3050 100%);
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; padding:24px 16px; gap:14px;
 }
-.cover-preview-box {
-    width:90px; aspect-ratio:2/3; border-radius:8px;
-    background:#f0eef8; border:1.5px dashed #c8c5e8;
-    overflow:hidden; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; flex-shrink:0;
-    transition:border-color .2s;
+.modal-cover-panel img {
+    width:160px; aspect-ratio:2/3; object-fit:cover;
+    border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.4);
+    display:none;
 }
-.cover-preview-box img { width:100%; height:100%; object-fit:cover; display:none; }
-.cover-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:6px; text-align:center; }
-.cover-placeholder svg { color:#c8c5e8; width:24px; height:24px; }
-.cover-placeholder span { font-size:.62rem; color:#b0acd0; line-height:1.3; }
-.cover-preview-box.has-image { border-style:solid; border-color:#a8a4e0; }
+.modal-cover-panel .cover-ph {
+    width:160px; aspect-ratio:2/3; border-radius:10px;
+    background:rgba(255,255,255,.08); border:2px dashed rgba(168,164,224,.4);
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:8px;
+}
+.modal-cover-panel .cover-ph svg  { color:rgba(168,164,224,.5); width:36px; height:36px; }
+.modal-cover-panel .cover-ph span { font-size:.7rem; color:rgba(168,164,224,.6); text-align:center; }
+.modal-cover-panel .cover-title {
+    font-size:.82rem; font-weight:600; color:rgba(255,255,255,.85);
+    text-align:center; line-height:1.4; max-width:170px;
+}
+.modal-cover-panel .cover-author {
+    font-size:.72rem; color:rgba(168,164,224,.7); text-align:center;
+}
 
+/* Right content panel */
+.modal-content-panel {
+    flex:1; display:flex; flex-direction:column; overflow:hidden;
+}
+.modal-content-header {
+    padding:20px 24px 16px; border-bottom:1px solid #f0eef8;
+    font-size:1rem; font-weight:700; color:#1a1a2e;
+}
+.modal-content-body {
+    flex:1; overflow-y:auto; padding:16px 24px;
+}
+.modal-content-footer {
+    padding:14px 24px; border-top:1px solid #f0eef8;
+    display:flex; gap:10px; justify-content:flex-end;
+}
+
+/* ── Buttons ── */
+.btn-modal-cancel { background:#f0eef8; color:#5a5a7a; border:none; border-radius:8px; padding:9px 22px; font-family:'Outfit',sans-serif; font-size:.84rem; font-weight:600; cursor:pointer; }
+.btn-modal-save   { background:#2a3050; color:white; border:none; border-radius:8px; padding:9px 22px; font-family:'Outfit',sans-serif; font-size:.84rem; font-weight:600; cursor:pointer; }
+.btn-modal-save:hover   { background:#3b4f7a; }
+.btn-modal-cancel:hover { background:#e0def0; }
+
+/* ── Form fields ── */
 .field { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
 .field label { font-size:.76rem; font-weight:600; color:#5a5a7a; text-transform:uppercase; letter-spacing:.04em; }
 .field input, .field select {
@@ -68,14 +82,15 @@
 .field select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238884a8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; cursor:pointer; }
 .field-ro input { background:#e8e6f0; color:#8884a8; cursor:not-allowed; }
 
-.modal-actions { display:flex; gap:10px; justify-content:center; margin-top:22px; }
-.btn-modal-cancel  { background:white; color:#3a3a5a; border:2px solid #e0def0; border-radius:8px; padding:10px 32px; font-family:'Outfit',sans-serif; font-size:.88rem; font-weight:600; cursor:pointer; transition:background .15s; }
-.btn-modal-cancel:hover { background:#f5f4fc; }
-.btn-modal-submit  { background:#2a3050; color:white; border:none; border-radius:8px; padding:10px 32px; font-family:'Outfit',sans-serif; font-size:.88rem; font-weight:600; cursor:pointer; transition:background .15s; }
-.btn-modal-submit:hover { background:#3b4f7a; }
+/* ── View detail rows ── */
+.detail-row { display:flex; justify-content:space-between; align-items:baseline; padding:8px 0; border-bottom:1px solid #f5f4fc; font-size:.84rem; }
+.detail-row:last-child { border-bottom:none; }
+.detail-row .d-label { color:#8884a8; flex-shrink:0; }
+.detail-row .d-value { font-weight:600; color:#1a1a2e; text-align:right; max-width:60%; word-break:break-word; }
+.detail-row .d-badge { background:#f0eef8; border-radius:20px; padding:2px 12px; font-size:.8rem; }
 
-.copies-red  { color:#e74c3c; font-weight:700; }
-.copies-grn  { color:#27ae60; font-weight:600; }
+.copies-red { color:#e74c3c; font-weight:700; }
+.copies-grn { color:#27ae60; font-weight:600; }
 </style>
 @endpush
 
@@ -99,7 +114,6 @@
         </a>
     </div>
 
-    {{-- Filters --}}
     <form method="GET" action="{{ route('librarian.books.index') }}">
         <div class="filter-row">
             <label>Category:</label>
@@ -210,84 +224,99 @@
     @endif
 </div>
 
-{{-- ── VIEW MODAL ── --}}
+{{-- ══════════════════════════════════════════════════════════
+     VIEW MODAL — two-column wide layout
+══════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="viewModal">
-  <div class="modal-box">
-    <div class="modal-title">Book Details</div>
-    <div class="view-modal-body">
-        {{-- Cover --}}
-        <div class="view-cover-box">
-            <img id="vCoverImg" src="" alt="Cover">
-            <div id="vCoverPlaceholder" class="view-cover-placeholder">
-                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="1.2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-            </div>
+  <div class="modal-box-wide">
+
+    {{-- Left: cover --}}
+    <div class="modal-cover-panel">
+        <img id="vCoverImg" src="" alt="Cover">
+        <div id="vCoverPh" class="cover-ph">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span>No cover</span>
         </div>
-        {{-- Details --}}
-        <div style="flex:1;">
+        <div class="cover-title"  id="vCoverTitle"></div>
+        <div class="cover-author" id="vCoverAuthor"></div>
+    </div>
+
+    {{-- Right: details --}}
+    <div class="modal-content-panel">
+        <div class="modal-content-header">Book Details</div>
+        <div class="modal-content-body">
             <div class="detail-row"><span class="d-label">Title</span>        <span class="d-value" id="vTitle"></span></div>
             <div class="detail-row"><span class="d-label">Author</span>       <span class="d-value" id="vAuthor"></span></div>
             <div class="detail-row"><span class="d-label">ISBN</span>         <span class="d-value" id="vIsbn"></span></div>
-            <div class="detail-row"><span class="d-label">Format</span>       <span class="d-value" id="vFormat"></span></div>
-            <div class="detail-row"><span class="d-label">Category</span>     <span class="d-value" id="vCat"></span></div>
+            <div class="detail-row"><span class="d-label">Format</span>       <span class="d-value d-badge" id="vFormat"></span></div>
+            <div class="detail-row"><span class="d-label">Category</span>     <span class="d-value d-badge" id="vCat"></span></div>
             <div class="detail-row"><span class="d-label">Total Copies</span> <span class="d-value" id="vTotal"></span></div>
             <div class="detail-row"><span class="d-label">Available</span>    <span class="d-value" id="vAvail"></span></div>
-            <div class="detail-row"><span class="d-label">Status</span>       <span class="d-value" id="vStatus"></span></div>
+            <div class="detail-row"><span class="d-label">Status</span>       <span class="d-value d-badge" id="vStatus"></span></div>
+        </div>
+        <div class="modal-content-footer">
+            <button class="btn-modal-cancel" onclick="closeModal('viewModal')">Close</button>
         </div>
     </div>
-    <div class="modal-actions">
-        <button class="btn-modal-cancel" onclick="closeModal('viewModal')">Close</button>
-    </div>
+
   </div>
 </div>
 
-{{-- ── EDIT MODAL ── --}}
+{{-- ══════════════════════════════════════════════════════════
+     EDIT MODAL — two-column wide layout
+══════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="editModal">
-  <div class="modal-box">
-    <div class="modal-title">Edit Book</div>
-    <form method="POST" id="editForm" action="">
-      @csrf @method('PUT')
+  <div class="modal-box-wide">
 
-      {{-- Cover preview --}}
-      <div class="cover-preview-row">
-        <div class="cover-preview-box" id="editCoverBox">
-            <img id="editCoverImg" src="" alt="Cover Preview">
-            <div class="cover-placeholder" id="editCoverPlaceholder">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-                <span>Cover preview</span>
-            </div>
+    {{-- Left: cover --}}
+    <div class="modal-cover-panel">
+        <img id="editCoverImg" src="" alt="Cover">
+        <div id="editCoverPh" class="cover-ph">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span>Current cover</span>
         </div>
-        <div>
-            <p style="font-size:.76rem;font-weight:600;color:#5a5a7a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Current Cover</p>
-            <p style="font-size:.78rem;color:#8884a8;line-height:1.5;">Cover image is set by Admin. Shown here for reference only.</p>
+        <div class="cover-title"  id="editCoverTitle"></div>
+        <div class="cover-author" id="editCoverAuthor"></div>
+        <div style="font-size:.65rem;color:rgba(168,164,224,.55);text-align:center;max-width:170px;line-height:1.4;margin-top:4px;">
+            Cover is set by Admin.<br>Shown here for reference.
         </div>
-      </div>
+    </div>
 
-      <div class="field field-ro"><label>Title</label><input type="text" id="eTitle" readonly></div>
-      <div class="field field-ro"><label>Author</label><input type="text" id="eAuthor" readonly></div>
-      <div class="field field-ro"><label>ISBN</label><input type="text" id="eIsbn" readonly></div>
-      <div class="field field-ro"><label>Format</label><input type="text" id="eFormat" readonly></div>
-      <div class="field field-ro"><label>Category</label><input type="text" id="eCat" readonly></div>
-      <div class="field field-ro"><label>Total Copies</label><input type="text" id="eTotal" readonly></div>
-      <div class="field">
-        <label>Available Copies</label>
-        <input type="number" name="available_copies" id="eAvail" min="0">
-      </div>
-      <div class="field">
-        <label>Status</label>
-        <select name="status" id="eStatus">
-            <option value="active">Active</option>
-            <option value="unavailable">Unavailable</option>
-        </select>
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn-modal-cancel" onclick="closeModal('editModal')">Cancel</button>
-        <button type="submit" class="btn-modal-submit">Submit Changes</button>
-      </div>
-    </form>
+    {{-- Right: edit form --}}
+    <div class="modal-content-panel">
+        <div class="modal-content-header">Edit Book</div>
+        <div class="modal-content-body">
+            <form method="POST" id="editForm" action="">
+                @csrf @method('PUT')
+                <div class="field field-ro"><label>Title</label><input type="text" id="eTitle" readonly></div>
+                <div class="field field-ro"><label>Author</label><input type="text" id="eAuthor" readonly></div>
+                <div class="field field-ro"><label>ISBN</label><input type="text" id="eIsbn" readonly></div>
+                <div class="field field-ro"><label>Format</label><input type="text" id="eFormat" readonly></div>
+                <div class="field field-ro"><label>Category</label><input type="text" id="eCat" readonly></div>
+                <div class="field field-ro"><label>Total Copies</label><input type="text" id="eTotal" readonly></div>
+                <div class="field">
+                    <label>Available Copies</label>
+                    <input type="number" name="available_copies" id="eAvail" min="0">
+                </div>
+                <div class="field">
+                    <label>Status</label>
+                    <select name="status" id="eStatus">
+                        <option value="active">Active</option>
+                        <option value="unavailable">Unavailable</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-content-footer">
+            <button type="button" class="btn-modal-cancel" onclick="closeModal('editModal')">Cancel</button>
+            <button type="submit" class="btn-modal-save" form="editForm">Submit Changes</button>
+        </div>
+    </div>
+
   </div>
 </div>
 
@@ -298,56 +327,47 @@
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); }));
 
-function openView(title, author, isbn, format, cat, total, avail, status, coverUrl) {
-    document.getElementById('vTitle').textContent  = title;
-    document.getElementById('vAuthor').textContent = author;
-    document.getElementById('vIsbn').textContent   = isbn;
-    document.getElementById('vFormat').textContent = format;
-    document.getElementById('vCat').textContent    = cat;
-    document.getElementById('vTotal').textContent  = total;
-    document.getElementById('vAvail').textContent  = avail;
-    document.getElementById('vStatus').textContent = status.charAt(0).toUpperCase() + status.slice(1);
-
-    var img = document.getElementById('vCoverImg');
-    var ph  = document.getElementById('vCoverPlaceholder');
+function setCover(imgId, phId, coverUrl) {
+    var img = document.getElementById(imgId);
+    var ph  = document.getElementById(phId);
     if (coverUrl) {
+        img.onload  = function(){ img.style.display='block'; ph.style.display='none'; };
+        img.onerror = function(){ img.style.display='none';  ph.style.display='flex'; };
         img.src = coverUrl;
-        img.style.display = 'block';
-        ph.style.display  = 'none';
     } else {
         img.style.display = 'none';
         ph.style.display  = 'flex';
     }
+}
 
+function openView(title, author, isbn, format, cat, total, avail, status, coverUrl) {
+    document.getElementById('vTitle').textContent       = title;
+    document.getElementById('vAuthor').textContent      = author;
+    document.getElementById('vIsbn').textContent        = isbn;
+    document.getElementById('vFormat').textContent      = format;
+    document.getElementById('vCat').textContent         = cat;
+    document.getElementById('vTotal').textContent       = total;
+    document.getElementById('vAvail').textContent       = avail;
+    document.getElementById('vStatus').textContent      = status.charAt(0).toUpperCase() + status.slice(1);
+    document.getElementById('vCoverTitle').textContent  = title;
+    document.getElementById('vCoverAuthor').textContent = author;
+    setCover('vCoverImg', 'vCoverPh', coverUrl);
     document.getElementById('viewModal').classList.add('open');
 }
 
 function openEdit(id, title, author, isbn, format, cat, total, avail, status, coverUrl) {
-    document.getElementById('editForm').action = `/librarian/books/${id}`;
-    document.getElementById('eTitle').value    = title;
-    document.getElementById('eAuthor').value   = author;
-    document.getElementById('eIsbn').value     = isbn;
-    document.getElementById('eFormat').value   = format;
-    document.getElementById('eCat').value      = cat;
-    document.getElementById('eTotal').value    = total;
-    document.getElementById('eAvail').value    = avail;
-    document.getElementById('eStatus').value   = status;
-
-    // Show cover preview in edit modal
-    var img = document.getElementById('editCoverImg');
-    var ph  = document.getElementById('editCoverPlaceholder');
-    var box = document.getElementById('editCoverBox');
-    if (coverUrl) {
-        img.src = coverUrl;
-        img.style.display = 'block';
-        ph.style.display  = 'none';
-        box.classList.add('has-image');
-    } else {
-        img.style.display = 'none';
-        ph.style.display  = 'flex';
-        box.classList.remove('has-image');
-    }
-
+    document.getElementById('editForm').action          = `/librarian/books/${id}`;
+    document.getElementById('eTitle').value             = title;
+    document.getElementById('eAuthor').value            = author;
+    document.getElementById('eIsbn').value              = isbn;
+    document.getElementById('eFormat').value            = format;
+    document.getElementById('eCat').value               = cat;
+    document.getElementById('eTotal').value             = total;
+    document.getElementById('eAvail').value             = avail;
+    document.getElementById('eStatus').value            = status;
+    document.getElementById('editCoverTitle').textContent  = title;
+    document.getElementById('editCoverAuthor').textContent = author;
+    setCover('editCoverImg', 'editCoverPh', coverUrl);
     document.getElementById('editModal').classList.add('open');
 }
 </script>
